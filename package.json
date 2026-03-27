@@ -40,6 +40,10 @@
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^10.0.6",
+    "@types/conventional-changelog-config-spec": "^2.1.5",
+    "@types/conventional-changelog-writer": "^4.0.11",
+    "@types/conventional-commits-parser": "^5.0.2",
+    "@types/git-raw-commits": "^5.0.1",
     "@types/node": "^25.5.0",
     "@types/yargs": "^17.0.35",
     "@vitest/coverage-v8": "^4.1.0",

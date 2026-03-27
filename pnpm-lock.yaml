@@ -11,6 +11,18 @@ importers:
       '@release-it/conventional-changelog':
         specifier: ^10.0.6
         version: 10.0.6(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.3.0)(release-it@19.2.4(@types/node@25.5.0))
+      '@types/conventional-changelog-config-spec':
+        specifier: ^2.1.5
+        version: 2.1.5
+      '@types/conventional-changelog-writer':
+        specifier: ^4.0.11
+        version: 4.0.11
+      '@types/conventional-commits-parser':
+        specifier: ^5.0.2
+        version: 5.0.2
+      '@types/git-raw-commits':
+        specifier: ^5.0.1
+        version: 5.0.1
       '@types/node':
         specifier: ^25.5.0
         version: 25.5.0
@@ -468,11 +480,26 @@ packages:
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
+  '@types/conventional-changelog-config-spec@2.1.5':
+    resolution: {integrity: sha512-OWmGg25U1syXv0GWBqlIbAtV2TZat8pBX5RLY3B5EP4EJ/LF0bvkuvpxq+QPex++QfRftf+EozK1DCD13V3elA==}
+
+  '@types/conventional-changelog-writer@4.0.11':
+    resolution: {integrity: sha512-Zxvn6OM4iYS1bwLKhYwVu7epkw2V5mfPhcUHZh+CIyMsffE4hMrJwAYC+NNp5XeXcDGF7KrsFzt/fEdovbekbg==}
+
+  '@types/conventional-commits-parser@5.0.2':
+    resolution: {integrity: sha512-BgT2szDXnVypgpNxOK8aL5SGjUdaQbC++WZNjF1Qge3Og2+zhHj+RWhmehLhYyvQwqAmvezruVfOf8+3m74W+g==}
+
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
+
+  '@types/git-raw-commits@5.0.1':
+    resolution: {integrity: sha512-sd4kgxJbuZF0RDy6cX7KlKSGiwqB1mqn8nriUbxt5e1F+MO/N4hJlhaYn0Omw4g2biClFpT5Mre07x7OkGt8tg==}
+
+  '@types/json-schema@7.0.15':
+    resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
   '@types/node@25.5.0':
     resolution: {integrity: sha512-jp2P3tQMSxWugkCUKLRPVUpGaL5MVFwF8RDuSRztfwgN1wmqJeMSbKlnEtQqU8UrhTmzEmZdu2I6v2dpp7XIxw==}
@@ -2236,9 +2263,28 @@ snapshots:
       '@types/deep-eql': 4.0.2
       assertion-error: 2.0.1
 
+  '@types/conventional-changelog-config-spec@2.1.5':
+    dependencies:
+      '@types/json-schema': 7.0.15
+
+  '@types/conventional-changelog-writer@4.0.11':
+    dependencies:
+      '@types/conventional-commits-parser': 5.0.2
+      '@types/node': 25.5.0
+
+  '@types/conventional-commits-parser@5.0.2':
+    dependencies:
+      '@types/node': 25.5.0
+
   '@types/deep-eql@4.0.2': {}
 
   '@types/estree@1.0.8': {}
+
+  '@types/git-raw-commits@5.0.1':
+    dependencies:
+      '@types/node': 25.5.0
+
+  '@types/json-schema@7.0.15': {}
 
   '@types/node@25.5.0':
     dependencies:
