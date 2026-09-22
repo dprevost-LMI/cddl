@@ -3,6 +3,10 @@ label = bstr .size (1..63)
 nai = tstr .regexp "[A-Za-z0-9]+@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)+"
 rwxbits = uint .bits rwx
 
+coseHeader = { alg: int }
+cosePayload = bstr .cbor coseHeader
+coseSeq = bstr .cborseq coseHeader
+
 foo = ip4 .and nai
 fooWithin = ip4 .within nai
 bar = foo .ne fooWithin

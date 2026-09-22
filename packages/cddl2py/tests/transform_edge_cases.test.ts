@@ -656,4 +656,17 @@ describe('transform edge cases', () => {
         expect(output).toContain('# leading docs')
         expect(output).toContain('Commented = str')
     })
+
+    it.each(['cbor', 'cborseq'] as const)('should ignore the .%s operator and still map bstr to bytes', (operatorType) => {
+        // RFC 8610 §3.8.4: .cbor/.cborseq are validation constraints on a byte string,
+        // not a structural type change - same as every other operator (.size, .and, ...)
+        const output = transform([variable('payload', {
+            Type: 'bstr',
+            Operator: {
+                Type: operatorType,
+                Value: { Type: 'group', Value: 'inner', Unwrapped: false }
+            }
+        } as any)])
+        expect(output).toContain('Payload = bytes')
+    })
 })

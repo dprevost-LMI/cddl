@@ -477,6 +477,8 @@ export function parseType (specType: any): { type: string, isLiteral: boolean } 
             return { type: 'Float', isLiteral: false };
         } else if ((specType[0] === 'string' || specType[0] === 'text')) {
             return { type: 'String', isLiteral: false };
+        } else if (specType[0] === 'bstr' || specType[0] === 'bytes') {
+            return { type: 'byte[]', isLiteral: false };
         } else if (specType[0] === 'null' || specType[0] === 'any') {
             return { type: 'Object', isLiteral: false };  // null/any represented as Object in Java
         } else if (typeof specType[0] === 'object') {
@@ -571,6 +573,15 @@ export function parseType (specType: any): { type: string, isLiteral: boolean } 
                         }
                     }
                 }
+
+                // Any other operator (.cbor, .cborseq, .size, .regexp, .bits, .and, .within,
+                // .eq, .ne, .lt, .le, .gt, .ge, ...) is a validation constraint on the value,
+                // not a structural type change - resolve the underlying type and ignore it,
+                // the same way the other generators already treat these operators.
+                if (typeof specType[0].Type === 'string') {
+                    return parseType([specType[0].Type]);
+                }
+
             /* c8 ignore next */ throw new Error(`Unknown operator: ${JSON.stringify(specType[0].Operator)}`)
             }
         }

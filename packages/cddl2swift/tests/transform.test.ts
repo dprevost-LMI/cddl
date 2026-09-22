@@ -22,6 +22,26 @@ describe('transform', () => {
             expect(output).toContain('public typealias DeviceAddress = String')
         })
 
+        it.each(['cbor', 'cborseq'] as const)('should ignore the .%s operator and still map bstr to [UInt8]', (operatorType) => {
+            // RFC 8610 §3.8.4: .cbor/.cborseq are validation constraints on a byte string,
+            // not a structural type change - same as every other operator (.size, .and, ...)
+            const assignment: Variable = {
+                Type: 'variable',
+                Name: 'payload',
+                PropertyType: {
+                    Type: 'bstr',
+                    Operator: {
+                        Type: operatorType,
+                        Value: { Type: 'group', Value: 'inner', Unwrapped: false }
+                    }
+                } as any,
+                Comments: [],
+                IsChoiceAddition: false
+            }
+            const output = transform([assignment])
+            expect(output).toContain('public typealias Payload = [UInt8]')
+        })
+
         it('should transform a string literal union into a raw value enum', () => {
             const assignment: Variable = {
                 Type: 'variable',

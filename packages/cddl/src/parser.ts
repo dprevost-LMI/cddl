@@ -13,7 +13,7 @@ import {
 
 const NIL_TOKEN: Token = { Type: Tokens.ILLEGAL, Literal: '' }
 const DEFAULT_OCCURRENCE: Occurrence = { n: 1, m: 1 } // exactly one time
-const OPERATORS: OperatorType[] = ['default', 'size', 'regexp', 'bits', 'and', 'within', 'eq', 'ne', 'lt', 'le', 'gt', 'ge']
+const OPERATORS: OperatorType[] = ['default', 'size', 'regexp', 'bits', 'and', 'within', 'eq', 'ne', 'lt', 'le', 'gt', 'ge', 'cbor', 'cborseq']
 const OPERATORS_EXPECTING_VALUES: Record<OperatorType, PropertyReferenceType[] | undefined> = {
     default: undefined,
     size: ['literal', 'range'],
@@ -27,6 +27,8 @@ const OPERATORS_EXPECTING_VALUES: Record<OperatorType, PropertyReferenceType[] |
     le: ['group'],
     gt: ['group'],
     ge: ['group'],
+    cbor: ['group'],
+    cborseq: ['group'],
 }
 
 export default class Parser {

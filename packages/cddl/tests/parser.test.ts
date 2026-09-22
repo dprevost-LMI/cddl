@@ -269,4 +269,48 @@ describe('parser', () => {
 
         vi.restoreAllMocks()
     })
+
+    it('parses the .cbor operator on a map member, referencing another rule as the embedded type', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('inner = { a: int }\nouter = { ? parent: bstr .cbor inner }\n')
+        const p = new Parser('foo.cddl')
+
+        const [, outer] = p.parse() as Group[]
+        expect(outer.Properties).toEqual([{
+            HasCut: true,
+            Occurrence: { n: 0, m: 1 },
+            Name: 'parent',
+            Type: [{
+                Type: 'bstr',
+                Operator: {
+                    Type: 'cbor',
+                    Value: { Type: 'group', Value: 'inner', Unwrapped: false }
+                }
+            }],
+            Comments: []
+        }])
+
+        vi.restoreAllMocks()
+    })
+
+    it('parses the .cborseq operator the same way, on a required member', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('inner = { a: int }\nouter = { payload: bstr .cborseq inner }\n')
+        const p = new Parser('foo.cddl')
+
+        const [, outer] = p.parse() as Group[]
+        expect(outer.Properties).toEqual([{
+            HasCut: true,
+            Occurrence: { n: 1, m: 1 },
+            Name: 'payload',
+            Type: [{
+                Type: 'bstr',
+                Operator: {
+                    Type: 'cborseq',
+                    Value: { Type: 'group', Value: 'inner', Unwrapped: false }
+                }
+            }],
+            Comments: []
+        }])
+
+        vi.restoreAllMocks()
+    })
 })

@@ -7,7 +7,7 @@ Operators in CDDL modify or constrain types, providing additional semantics beyo
 In the AST, an operator is represented by the following structure:
 
 ```typescript
-export type OperatorType = 'default' | 'size' | 'regexp' | 'bits' | 'and' | 'within' | 'eq' | 'ne' | 'lt' | 'le' | 'gt' | 'ge'
+export type OperatorType = 'default' | 'size' | 'regexp' | 'bits' | 'and' | 'within' | 'eq' | 'ne' | 'lt' | 'le' | 'gt' | 'ge' | 'cbor' | 'cborseq'
 
 export interface Operator {
     Type: OperatorType
@@ -35,6 +35,8 @@ CDDL supports the following operators, represented in the AST:
 10. `le`: Less than or equal comparison
 11. `gt`: Greater than comparison
 12. `ge`: Greater than or equal comparison
+13. `cbor`: Asserts a byte string, decoded as CBOR, matches the given type (RFC 8610 §3.8.4)
+14. `cborseq`: Asserts a byte string, decoded as a sequence of CBOR items, matches the given (array) type (RFC 8610 §3.8.4)
 
 ## Operator Location in the AST
 
@@ -241,6 +243,51 @@ AST representation:
   "Comments": []
 }
 ```
+
+### CBOR Operators
+
+The `.cbor` operator asserts that a byte string, once decoded as CBOR, matches
+the given type - the standard way to describe a byte string containing nested
+CBOR-encoded data, e.g. how COSE (RFC 9052) describes a `COSE_Sign1`'s
+protected header or payload field. `.cborseq` is the same idea for a byte
+string containing a *sequence* of CBOR items, matched against an array type
+(RFC 8610 §3.8.4):
+
+```cddl
+coseHeader = { alg: int }
+cosePayload = bstr .cbor coseHeader
+```
+
+AST representation:
+
+```json
+{
+  "Type": "variable",
+  "Name": "cosePayload",
+  "IsChoiceAddition": false,
+  "PropertyType": [
+    {
+      "Type": "bstr",
+      "Operator": {
+        "Type": "cbor",
+        "Value": {
+          "Type": "group",
+          "Value": "coseHeader",
+          "Unwrapped": false
+        }
+      }
+    }
+  ],
+  "Comments": []
+}
+```
+
+`.cborseq` produces the identical shape with `"Type": "cborseq"` in place of
+`"cbor"`. Like `.size`/`.regexp`/the comparison operators, this is a
+validation constraint on the value, not a structural type change - the
+`cddl2*` generators all resolve `bstr .cbor X` to their native byte-array
+type (`Uint8Array`, `bytes`, `[UInt8]`, `ByteArray`, `byte[]`), ignoring the
+operator and its referenced type.
 
 ### Comparison Operators
 
