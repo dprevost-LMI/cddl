@@ -273,6 +273,26 @@ describe('utils', () => {
             expect(isFloatRange(undefined)).toBe(false)
             expect(isFloatRange({})).toBe(false)
         })
+
+        it('treats a symbolic bound as non-float, not a false positive from Number.isInteger(string)', () => {
+            // RFC 8610's own example: `max-byte = 255` then `byte = 0..max-byte` -
+            // Max is a named reference, parsed as { Type: 'group', Value: 'max-byte' },
+            // a string Value. Number.isInteger('max-byte') is false, so an unguarded
+            // `!Number.isInteger(node.Value)` would wrongly call this a float range.
+            expect(isFloatRange({
+                Min: { Type: 'literal', Value: 0, Unwrapped: false },
+                Max: { Type: 'group', Value: 'max-byte', Unwrapped: false },
+                Inclusive: true
+            })).toBe(false)
+        })
+
+        it('a float literal bound still wins even alongside a symbolic bound', () => {
+            expect(isFloatRange({
+                Min: { Type: 'literal', Value: 0, Unwrapped: false, IsFloat: true },
+                Max: { Type: 'group', Value: 'max-value', Unwrapped: false },
+                Inclusive: true
+            })).toBe(true)
+        })
     })
 
     describe('literal guards', () => {

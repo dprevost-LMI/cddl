@@ -126,13 +126,19 @@ export function isRange (t: any): boolean {
  * BAD-range2 examples). For that undefined case we pick float rather than integer,
  * since it's the non-lossy choice - an integer type would corrupt real fractional
  * values, while a float type just represents whole numbers as e.g. `1.0`.
+ *
+ * A bound can also be a symbolic reference, e.g. `byte = 0..max-byte`, parsed as
+ * `{ Type: 'group', Value: 'max-byte' }` - a string Value, not a number. That bound
+ * is treated as non-float (we can't see what the reference resolves to), so it never
+ * forces the range to float on its own.
  */
 export function isFloatRange (range: any): boolean {
     const isFloatEndpoint = (node: any): boolean => {
         if (typeof node === 'number') {
             return !Number.isInteger(node)
         }
-        return Boolean(node) && typeof node === 'object' && (node.IsFloat === true || !Number.isInteger(node.Value))
+        return Boolean(node) && typeof node === 'object' &&
+            (node.IsFloat === true || (typeof node.Value === 'number' && !Number.isInteger(node.Value)))
     }
     return Boolean(range) && (isFloatEndpoint(range.Min) || isFloatEndpoint(range.Max))
 }
