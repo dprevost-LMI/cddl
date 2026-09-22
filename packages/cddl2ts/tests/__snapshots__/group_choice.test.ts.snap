@@ -37,7 +37,7 @@ export type MapGroupChoice = {
 export type TypeChoiceInsideGroup = number | string;
 
 // 7. Map with nested group (bare and parens) - should be object like
-export type ArrayGroupChoice = Int | string[];
+export type ArrayGroupChoice = (Int | string)[];
 
 export type MapWithBareGroup = number;
 
