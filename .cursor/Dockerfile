@@ -1,6 +1,6 @@
 FROM node:24-bookworm-slim
 
-ARG PNPM_VERSION=10.32.1
+ARG PNPM_VERSION=12.5.1
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
 RUN apt-get update \
@@ -21,6 +21,8 @@ COPY packages/cddl/package.json packages/cddl/package.json
 COPY packages/cddl2ts/package.json packages/cddl2ts/package.json
 COPY packages/cddl2java/package.json packages/cddl2java/package.json
 COPY packages/cddl2py/package.json packages/cddl2py/package.json
+COPY packages/cddl2swift/package.json packages/cddl2swift/package.json
+COPY packages/cddl2kotlin/package.json packages/cddl2kotlin/package.json
 
 RUN pnpm install --frozen-lockfile
 

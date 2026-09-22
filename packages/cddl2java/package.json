@@ -32,14 +32,14 @@
     "release:ci": "pnpm release --ci --npm.skipChecks"
   },
   "devDependencies": {
-    "@types/yargs": "^17.0.35",
-    "@types/node": "^26.0.1"
+    "@types/node": "^26.0.1",
+    "@types/yargs": "^17.0.35"
   },
   "dependencies": {
     "@babel/parser": "^7.29.0",
     "camelcase": "^9.0.0",
     "cddl": "workspace:*",
     "recast": "^0.23.11",
-    "yargs": "^18.0.0"
+    "yargs": "^18.2.0"
   }
 }

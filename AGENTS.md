@@ -42,7 +42,7 @@ pnpm run compile   # compiles cddl first, then every other package (they depend 
 
 This repository defines a repo-level cloud agent environment in
 `.cursor/environment.json`. The corresponding `.cursor/Dockerfile` pins Node 24
-and pnpm 10.32.1, then preinstalls the pnpm workspace dependencies into
+and pnpm 12.5.1, then preinstalls the pnpm workspace dependencies into
 `/workspace`. You can run these commands immediately in a fresh cloud agent
 without a preliminary `pnpm install`:
 - `pnpm compile`

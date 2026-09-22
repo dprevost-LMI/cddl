@@ -17,7 +17,7 @@
   "engines": {
     "node": ">=22.0.0",
     "npm": "use pnpm",
-    "pnpm": ">=10.0.0"
+    "pnpm": ">=12.0.0"
   },
   "bugs": {
     "url": "https://github.com/webdriverio/cddl/issues"
@@ -55,5 +55,5 @@
     "typescript": "^7.0.2",
     "vitest": "^4.1.0"
   },
-  "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
+  "packageManager": "pnpm@12.5.1+sha512.e3f305bc784a2bc89f5ad3b6138889470fae8d2af5f36b61216ec91c2c3d64089775f9de38aac331044ea40f245cb0d5666392dfdf65824e1907ef6a2c62de5f"
 }

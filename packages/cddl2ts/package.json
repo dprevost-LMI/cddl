@@ -27,18 +27,18 @@
     "release": "release-it --config .release-it.ts --VV",
     "release:ci": "pnpm release --ci --npm.skipChecks",
     "cli-examples": "run-p cli-examples:*",
-    "cli-examples:local": "pnpm run compile && node ./bin/cddl2ts.js ../../examples/webdriver/local.cddl --unknown-as-any > ./cli-examples/local.ts && tsc -p ./cli-examples/tsconfig.json",
-    "cli-examples:remote": "pnpm run compile && node ./bin/cddl2ts.js ../../examples/webdriver/remote.cddl --unknown-as-any > ./cli-examples/remote.ts && tsc -p ./cli-examples/tsconfig.json"
+    "cli-examples:local": "pnpm -w run compile && node ./bin/cddl2ts.js ../../examples/webdriver/local.cddl --unknown-as-any > ./cli-examples/local.ts && tsc -p ./cli-examples/tsconfig.json",
+    "cli-examples:remote": "pnpm -w run compile && node ./bin/cddl2ts.js ../../examples/webdriver/remote.cddl --unknown-as-any > ./cli-examples/remote.ts && tsc -p ./cli-examples/tsconfig.json"
   },
   "devDependencies": {
-    "@types/yargs": "^17.0.35",
-    "@types/node": "^26.0.1"
+    "@types/node": "^26.0.1",
+    "@types/yargs": "^17.0.35"
   },
   "dependencies": {
     "@babel/parser": "^7.29.0",
     "camelcase": "^9.0.0",
     "cddl": "workspace:*",
     "recast": "^0.23.11",
-    "yargs": "^18.0.0"
+    "yargs": "^18.2.0"
   }
 }
