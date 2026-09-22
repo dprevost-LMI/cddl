@@ -7,7 +7,7 @@ on:
         description: "Number of the PR (without #)"
         required: true
       amount:
-        description: "The expense amount you like to grant for the contribution in $"
+        description: "The expense amount you'd like to grant for the contribution in $"
         required: true
         type: choice
         options:

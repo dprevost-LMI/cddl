@@ -118,11 +118,11 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-            ref: 'main'
-            fetch-depth: 0 # Required to fetch all tags for release-it
+          ref: 'main'
+          fetch-depth: 0 # Required to fetch all tags for release-it
       - name: Setup PNPM
         uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
-      - name: Setup Node version
+      - name: Setup Node Version
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 24.x
@@ -132,9 +132,9 @@ jobs:
         run: |
           git config --global user.email "bot@webdriver.io"
           git config --global user.name "WebdriverIO Release Bot"
-      - name: Install dependencies
+      - name: Install Dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build package
+      - name: Build Package
         run: pnpm run build
         env:
           NODE_ENV: production
@@ -142,7 +142,7 @@ jobs:
         working-directory: packages/cddl
         run: pnpm run release:ci -- ${{ inputs.releaseType }}
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
 
   release-dependents:
@@ -163,11 +163,11 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-            ref: 'main'
-            fetch-depth: 0 # Required to fetch all tags for release-it
+          ref: 'main'
+          fetch-depth: 0 # Required to fetch all tags for release-it
       - name: Setup PNPM
         uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
-      - name: Setup Node version
+      - name: Setup Node Version
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 24.x
@@ -177,9 +177,9 @@ jobs:
         run: |
           git config --global user.email "bot@webdriver.io"
           git config --global user.name "WebdriverIO Release Bot"
-      - name: Install dependencies
+      - name: Install Dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build package
+      - name: Build Package
         run: pnpm run build
         env:
           NODE_ENV: production
@@ -187,5 +187,5 @@ jobs:
         working-directory: packages/${{ matrix.package }}
         run: pnpm run release:ci -- ${{ inputs.releaseType }}
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
