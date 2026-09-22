@@ -293,7 +293,10 @@ describe('parser', () => {
     })
 
     it('parses the .cborseq operator the same way, on a required member', () => {
-        vi.spyOn(fs, 'readFileSync').mockReturnValue('inner = { a: int }\nouter = { payload: bstr .cborseq inner }\n')
+        // .cborseq's argument must be an array type (RFC 8610 §3.8.4: the decoded
+        // sequence, taken as an array, is matched against it) - unlike .cbor's inner,
+        // which matches a single decoded item and can legitimately be a map.
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('innerList = [int]\nouter = { payload: bstr .cborseq innerList }\n')
         const p = new Parser('foo.cddl')
 
         const [, outer] = p.parse() as Group[]
@@ -305,7 +308,7 @@ describe('parser', () => {
                 Type: 'bstr',
                 Operator: {
                     Type: 'cborseq',
-                    Value: { Type: 'group', Value: 'inner', Unwrapped: false }
+                    Value: { Type: 'group', Value: 'innerList', Unwrapped: false }
                 }
             }],
             Comments: []

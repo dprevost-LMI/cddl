@@ -1821,6 +1821,29 @@ exports[`parser > can parse operators 1`] = `
   },
   {
     "Comments": [],
+    "Name": "coseHeaders",
+    "Type": "array",
+    "Values": [
+      {
+        "Comments": [],
+        "HasCut": false,
+        "Name": "",
+        "Occurrence": {
+          "m": 1,
+          "n": 1,
+        },
+        "Type": [
+          {
+            "Type": "group",
+            "Unwrapped": false,
+            "Value": "coseHeader",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    "Comments": [],
     "IsChoiceAddition": false,
     "Name": "coseSeq",
     "PropertyType": [
@@ -1830,7 +1853,7 @@ exports[`parser > can parse operators 1`] = `
           "Value": {
             "Type": "group",
             "Unwrapped": false,
-            "Value": "coseHeader",
+            "Value": "coseHeaders",
           },
         },
         "Type": "bstr",

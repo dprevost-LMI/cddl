@@ -5,7 +5,9 @@ rwxbits = uint .bits rwx
 
 coseHeader = { alg: int }
 cosePayload = bstr .cbor coseHeader
-coseSeq = bstr .cborseq coseHeader
+
+coseHeaders = [coseHeader]
+coseSeq = bstr .cborseq coseHeaders
 
 foo = ip4 .and nai
 fooWithin = ip4 .within nai
