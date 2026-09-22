@@ -20,6 +20,7 @@ import {
     isDigit,
     isGroup,
     isLetter,
+    isFloatRange,
     isLiteralWithValue,
     isNamedGroupReference,
     isNativeTypeWithOperator,
@@ -229,6 +230,68 @@ describe('utils', () => {
 
             expect(isRange({ Type: rangeReference })).toBe(true)
             expect(isRange({ Type: 'range' })).toBe(false)
+        })
+    })
+
+    describe('range float detection', () => {
+        it('detects float ranges from the IsFloat marker, including whole-valued floats', () => {
+            expect(isFloatRange({
+                Min: { Type: 'literal', Value: 0, Unwrapped: false, IsFloat: true },
+                Max: { Type: 'literal', Value: 1, Unwrapped: false, IsFloat: true },
+                Inclusive: true
+            })).toBe(true)
+
+            expect(isFloatRange({
+                Min: { Type: 'literal', Value: 0.5, Unwrapped: false, IsFloat: true },
+                Max: { Type: 'literal', Value: 1.5, Unwrapped: false, IsFloat: true },
+                Inclusive: true
+            })).toBe(true)
+        })
+
+        it('treats a plain integer range as non-float', () => {
+            expect(isFloatRange({
+                Min: { Type: 'literal', Value: 0, Unwrapped: false },
+                Max: { Type: 'literal', Value: 359, Unwrapped: false },
+                Inclusive: true
+            })).toBe(false)
+        })
+
+        it('is float if either bound is float, even if the other is a whole number', () => {
+            expect(isFloatRange({
+                Min: { Type: 'literal', Value: 0, Unwrapped: false },
+                Max: { Type: 'literal', Value: 1.5, Unwrapped: false, IsFloat: true },
+                Inclusive: true
+            })).toBe(true)
+        })
+
+        it('also handles Min/Max as plain numbers, per the declared Range type', () => {
+            expect(isFloatRange({ Min: 0, Max: 10, Inclusive: true })).toBe(false)
+            expect(isFloatRange({ Min: 0, Max: 1.5, Inclusive: true })).toBe(true)
+        })
+
+        it('returns false for a missing or empty range', () => {
+            expect(isFloatRange(undefined)).toBe(false)
+            expect(isFloatRange({})).toBe(false)
+        })
+
+        it('treats a symbolic bound as non-float, not a false positive from Number.isInteger(string)', () => {
+            // RFC 8610's own example: `max-byte = 255` then `byte = 0..max-byte` -
+            // Max is a named reference, parsed as { Type: 'group', Value: 'max-byte' },
+            // a string Value. Number.isInteger('max-byte') is false, so an unguarded
+            // `!Number.isInteger(node.Value)` would wrongly call this a float range.
+            expect(isFloatRange({
+                Min: { Type: 'literal', Value: 0, Unwrapped: false },
+                Max: { Type: 'group', Value: 'max-byte', Unwrapped: false },
+                Inclusive: true
+            })).toBe(false)
+        })
+
+        it('a float literal bound still wins even alongside a symbolic bound', () => {
+            expect(isFloatRange({
+                Min: { Type: 'literal', Value: 0, Unwrapped: false, IsFloat: true },
+                Max: { Type: 'group', Value: 'max-value', Unwrapped: false },
+                Inclusive: true
+            })).toBe(true)
         })
     })
 

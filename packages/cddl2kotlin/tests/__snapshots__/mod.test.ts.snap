@@ -82,7 +82,7 @@ data class SessionCapabilitiesRequest(
 data class SomeGroup(
     val optional: String? = null, // this is not leading
     val orientation: String? = null,
-    val scale: Long? = null,
+    val scale: Double? = null,
     val shrinkToFit: Boolean? = null,
     val shrinkToFitP: Boolean? = null,
     val bottom: Double? = null, // this is the pageRanges param

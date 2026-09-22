@@ -23,7 +23,7 @@ public class PointerCommonProperties {
     /**
      * Creates a new PointerCommonProperties instance
      */
-    public PointerCommonProperties(Long width, Long height, Float pressure, Float tangentialPressure, Float twist, Float altitudeAngle, Float azimuthAngle) {
+    public PointerCommonProperties(Long width, Long height, Float pressure, Float tangentialPressure, Integer twist, Float altitudeAngle, Float azimuthAngle) {
         this.width = width;
         this.height = height;
         this.pressure = pressure;
@@ -73,13 +73,13 @@ public class PointerCommonProperties {
         return this.tangentialPressure;
     }
 
-    private final Float twist;
+    private final Integer twist;
 
     /**
      * Gets the twist property
-     * @return Float value
+     * @return Integer value
      */
-    public Float getTwist() {
+    public Integer getTwist() {
         return this.twist;
     }
 

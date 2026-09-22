@@ -3,7 +3,7 @@ import path from 'node:path'
 import util from 'node:util'
 
 import camelcase from 'camelcase'
-import { Array as CDDLArray, parse as parseCDDL, type PropertyReference, type Property, type Group, type Variable, type Assignment, type PropertyType } from 'cddl'
+import { Array as CDDLArray, parse as parseCDDL, isFloatRange, type PropertyReference, type Property, type Group, type Variable, type Assignment, type PropertyType } from 'cddl'
 
 import { pascalCase, writeFile } from './utils.js'
 import { CDDL_PARSE_ERROR_MESSAGE } from './constants.js'
@@ -459,7 +459,7 @@ function parsePropertyName (name: string): string {
     return name
 }
 
-function parseType (specType: any): { type: string, isLiteral: boolean } {
+export function parseType (specType: any): { type: string, isLiteral: boolean } {
     let type = 'Unknown'
     let isLiteral = false
 
@@ -530,8 +530,7 @@ function parseType (specType: any): { type: string, isLiteral: boolean } {
                     // For range types, determine integer vs float
                     if (specType[0].Value && typeof specType[0].Value === 'object' &&
                         specType[0].Value.Min && specType[0].Value.Min.Value !== undefined) {
-                        const minVal = specType[0].Value.Min.Value;
-                        return { type: Number.isInteger(minVal) ? 'Integer' : 'Float', isLiteral: false };
+                        return { type: isFloatRange(specType[0].Value) ? 'Float' : 'Integer', isLiteral: false };
                     }
                     /* c8 ignore next */ throw new Error(`Unknown type: ${JSON.stringify(specType[0].Value)}`)
                 } else if (objType === 'literal' && 'Value' in specType[0] && specType[0].Value !== undefined) {
@@ -557,7 +556,7 @@ function parseType (specType: any): { type: string, isLiteral: boolean } {
                 // Handle complex types with operators
                 if (typeof specType[0].Type === 'object' && 'Type' in specType[0].Type) {
                     if (specType[0].Type.Type === 'range') {
-                        return { type: 'Float', isLiteral: false };
+                        return { type: isFloatRange(specType[0].Type.Value) ? 'Float' : 'Integer', isLiteral: false };
                     } else if (specType[0].Type.Type === 'group' && 'Value' in specType[0].Type) {
                         if (specType[0].Type.Value === 'js-uint') {
                             return { type: 'Long', isLiteral: false };

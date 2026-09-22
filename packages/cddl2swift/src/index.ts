@@ -1,10 +1,10 @@
 import {
     isCDDLArray, isGroup, isNamedGroupReference, isLiteralWithValue,
     isNativeTypeWithOperator, isUnNamedProperty, isPropertyReference,
-    isRange, isVariable, pascalCase,
+    isRange, isFloatRange, isVariable, pascalCase,
     type Assignment, type PropertyType, type PropertyReference,
     type Property, type Array as CDDLArray, type Group,
-    type Variable, type Comment, type Tag
+    type Variable, type Comment, type Tag, type NativeTypeWithOperator
 } from 'cddl'
 
 import { fieldName, enumCaseName, indent } from './utils.js'
@@ -66,7 +66,8 @@ function generateVariable (v: Variable, ctx: Context): string {
     const comments = formatLeadingComments(v.Comments)
 
     if (propTypes.length === 1 && isRange(propTypes[0])) {
-        return `${comments}public typealias ${name} = Int`
+        const range = ((propTypes[0] as NativeTypeWithOperator).Type as PropertyReference).Value
+        return `${comments}public typealias ${name} = ${isFloatRange(range) ? 'Double' : 'Int'}`
     }
 
     if (propTypes.length === 1) {
@@ -435,11 +436,12 @@ function resolveType (t: PropertyType, ctx: Context): string {
     }
 
     if (isRange(t)) {
-        return 'Int'
+        const range = ((t as NativeTypeWithOperator).Type as PropertyReference).Value
+        return isFloatRange(range) ? 'Double' : 'Int'
     }
 
     if (isPropertyReference(t) && (t as PropertyReference).Type === 'range') {
-        return 'Int'
+        return isFloatRange((t as PropertyReference).Value) ? 'Double' : 'Int'
     }
 
     if (isNativeTypeWithOperator(t) && isNamedGroupReference(t.Type)) {
