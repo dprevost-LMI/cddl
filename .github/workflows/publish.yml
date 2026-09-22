@@ -26,7 +26,11 @@ on:
           - minor
           - major
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+# Static group (not github.ref): every dispatch releases main, so two dispatches from
+# different branches must still serialize against each other, not run in parallel.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   test:
