@@ -12,7 +12,7 @@ exception: it only points here, it doesn't hold its own copy of these rules.
 ## Repo map
 
 pnpm workspace, no lerna/nx. `cddl` is the CDDL parser every other package
-depends on (via `workspace:*`); the four `cddl2*` packages are independent
+depends on (via `workspace:*`); the five `cddl2*` packages are independent
 generators built on top of it:
 
 ```
