@@ -2,12 +2,8 @@ import type { Config } from 'release-it';
 
 const baseConfig = (name: string): Config => ({
   plugins: {
-    "release-it-pnpm": {
-      // Disable the release step here to skip changelogithub and use `conventional-changelog` instead.
-      disableRelease: true,
-      // Publish only the current package; the plugin defaults to recursive workspace publishing.
-      publishCommand: 'pnpm publish --access public --no-git-checks --tag $tag',
-    },
+    // Declared before release-it-pnpm so its scoped bump wins over release-it-pnpm's own,
+    // repo-wide (unscoped) recommended-bump check.
     "@release-it/conventional-changelog": {
       infile: false,
       // This mimics changelogithub categories/emojis
@@ -35,7 +31,17 @@ const baseConfig = (name: string): Config => ({
       // Path filtering that changelogithub does not support for scoped release notes per package.
       gitRawCommitsOpts: {
         path: [".", "../../tsconfig.json"]
+      },
+      // Scope the bump recommendation the same way, or it's computed from every package's commits.
+      commitsOpts: {
+        path: [".", "../../tsconfig.json"]
       }
+    },
+    "release-it-pnpm": {
+      // Disable the release step here to skip changelogithub and use `conventional-changelog` instead.
+      disableRelease: true,
+      // Publish only the current package; the plugin defaults to recursive workspace publishing.
+      publishCommand: 'pnpm publish --access public --no-git-checks --tag $tag',
     }
   },
   git: {

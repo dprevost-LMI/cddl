@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: 'Which package to release?'
+        description: 'Which package to release ("all" only releases packages changed since their last tag; picking one forces its release)'
         required: true
         type: choice
         default: 'all'
@@ -14,6 +14,8 @@ on:
           - cddl2ts
           - cddl2java
           - cddl2py
+          - cddl2swift
+          - cddl2kotlin
       releaseType:
         description: "Release type - major, minor or patch"
         required: true
@@ -40,8 +42,65 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Validates compiling, typechecks, unit tests and CLI tests
         run: pnpm run checks:all
-  release:
+
+  prepare:
     needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      # cddl is a workspace:* dependency of the rest, so it's split out and released first.
+      releaseCddl: ${{ steps.set.outputs.releaseCddl }}
+      dependents: ${{ steps.set.outputs.dependents }}
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 'main'
+          fetch-depth: 0
+          fetch-tags: true
+      - id: set
+        # package=all: only release packages changed since their last tag (or untagged).
+        # A specific package is an explicit choice, so it's always released.
+        run: |
+          if [ "${{ inputs.package }}" = "all" ]; then
+            packages=()
+            for name in cddl cddl2ts cddl2java cddl2py cddl2swift cddl2kotlin; do
+              dir="packages/$name"
+              last_tag=$(git tag -l "${name}-v*" --sort=-v:refname | head -n1)
+              if [ -z "$last_tag" ]; then
+                echo "$name: no previous release tag, including"
+                packages+=("$name")
+              elif ! git diff --quiet "$last_tag"..HEAD -- "$dir"; then
+                echo "$name: changes since $last_tag, including"
+                packages+=("$name")
+              else
+                echo "$name: no changes since $last_tag, skipping"
+              fi
+            done
+          else
+            packages=("${{ inputs.package }}")
+          fi
+
+          releaseCddl=false
+          dependents=()
+          for name in "${packages[@]}"; do
+            if [ "$name" = "cddl" ]; then
+              releaseCddl=true
+            else
+              dependents+=("$name")
+            fi
+          done
+
+          if [ ${#dependents[@]} -eq 0 ]; then
+            dependents_json="[]"
+          else
+            dependents_json=$(printf '%s\n' "${dependents[@]}" | jq -R . | jq -sc .)
+          fi
+          echo "releaseCddl=$releaseCddl" >> "$GITHUB_OUTPUT"
+          echo "dependents=$dependents_json" >> "$GITHUB_OUTPUT"
+
+  release-cddl:
+    needs: prepare
+    if: ${{ needs.prepare.outputs.releaseCddl == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -51,6 +110,7 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+            ref: 'main'
             fetch-depth: 0 # Required to fetch all tags for release-it
       - name: Setup PNPM
         uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
@@ -71,8 +131,53 @@ jobs:
         env:
           NODE_ENV: production
       - name: Release
+        working-directory: packages/cddl
+        run: pnpm run release:ci -- ${{ inputs.releaseType }}
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NPM_CONFIG_PROVENANCE: true
+
+  release-dependents:
+    needs: [prepare, release-cddl]
+    # Proceeds if release-cddl succeeded or was skipped (cddl not in this release), but not if it failed.
+    if: ${{ !failure() && !cancelled() && needs.prepare.outputs.dependents != '[]' }}
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        package: ${{ fromJson(needs.prepare.outputs.dependents) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+            ref: 'main'
+            fetch-depth: 0 # Required to fetch all tags for release-it
+      - name: Setup PNPM
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+      - name: Setup Node version
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24.x
+          cache: 'pnpm'
+          registry-url: https://registry.npmjs.org/
+      - name: Setup Git
         run: |
-          pnpm run release:ci:${{github.event.inputs.package}} -- ${{ github.event.inputs.releaseType }}
+          git config --global user.email "bot@webdriver.io"
+          git config --global user.name "WebdriverIO Release Bot"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build package
+        run: pnpm run build
+        env:
+          NODE_ENV: production
+      - name: Release
+        working-directory: packages/${{ matrix.package }}
+        run: pnpm run release:ci -- ${{ inputs.releaseType }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           NPM_CONFIG_PROVENANCE: true
