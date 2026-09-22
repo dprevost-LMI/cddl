@@ -29,6 +29,18 @@ Each package has its own `.release-it.ts` (sharing common config from
 `.release-it.base.ts`) and version — there is no monorepo-wide version to
 keep in sync.
 
+## Docs
+
+`packages/cddl/docs/*.md` hand-documents the AST (`ast.ts`/`parser.ts`) with
+worked examples — it is not generated, so nothing keeps it in sync
+automatically. Any AST change (a new operator, a new field, a changed shape)
+needs a matching doc update in the same PR: check `packages/cddl/docs/` for
+the relevant file(s), not just the type declarations, but every worked
+example and enumerated list. This isn't hypothetical — `references.md`/
+`ranges.md` (missing `IsFloat`) and `operators.md` (missing two whole
+operators, `OperatorType` union, numbered list, and worked examples) were
+each found stale only by manual review, not by anything automated catching it.
+
 ## Setup
 
 Node 24, pnpm pinned in `package.json#packageManager`.
