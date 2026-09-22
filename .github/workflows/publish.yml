@@ -28,6 +28,9 @@ on:
 
 # Static group (not github.ref): every dispatch releases main, so two dispatches from
 # different branches must still serialize against each other, not run in parallel.
+# Known limitation: GitHub only keeps one pending run per group. If a 3rd dispatch
+# arrives while a 2nd is already queued behind a running 1st, the 2nd is silently
+# cancelled before it runs any steps. Avoid triggering overlapping release dispatches.
 concurrency:
   group: release
   cancel-in-progress: false
