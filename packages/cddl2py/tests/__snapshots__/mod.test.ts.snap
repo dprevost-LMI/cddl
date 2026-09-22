@@ -56,7 +56,7 @@ class SessionCapabilitiesRequest(BaseModel):
 class SomeGroup(BaseModel):
     optional: Optional[str] = None  # this is not leading
     orientation: Optional[Union[Literal["portrait"], Literal["landscape"]]] = Field(default="portrait")
-    scale: Optional[int] = None
+    scale: Optional[float] = None
     shrink_to_fit: Optional[bool] = None
     shrink_to_fit_p: Optional[bool] = Field(default=True)
     bottom: Optional[float] = Field(default=1)  # this is the pageRanges param
@@ -128,7 +128,7 @@ class SessionCapabilitiesRequest(TypedDict):
 class SomeGroup(TypedDict):
     optional: NotRequired[str]  # this is not leading
     orientation: NotRequired[Union[Literal["portrait"], Literal["landscape"]]]
-    scale: NotRequired[int]
+    scale: NotRequired[float]
     shrink_to_fit: NotRequired[bool]
     shrink_to_fit_p: NotRequired[bool]
     bottom: NotRequired[float]  # this is the pageRanges param

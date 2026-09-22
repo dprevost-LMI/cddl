@@ -643,7 +643,7 @@ class BrowsingContextCaptureScreenshotParameters(TypedDict):
 
 class BrowsingContextImageFormat(TypedDict):
     type: str
-    quality: NotRequired[int]
+    quality: NotRequired[float]
 
 class BrowsingContextBoxClipRectangle(TypedDict):
     type: Literal["box"]
@@ -698,7 +698,7 @@ class BrowsingContextPrintParameters(TypedDict):
     orientation: NotRequired[Union[Literal["portrait"], Literal["landscape"]]]
     page: NotRequired[BrowsingContextPrintPageParameters]
     page_ranges: NotRequired[list[Union[JsUint, str]]]
-    scale: NotRequired[int]
+    scale: NotRequired[float]
     shrink_to_fit: NotRequired[bool]
 
 class BrowsingContextPrintMarginParameters(TypedDict):
@@ -747,12 +747,12 @@ class EmulationSetGeolocationOverrideParameters(TypedDict):
     user_contexts: NotRequired[list[BrowserUserContext]]
 
 class EmulationGeolocationCoordinates(TypedDict):
-    latitude: int
-    longitude: int
+    latitude: float
+    longitude: float
     accuracy: NotRequired[float]
     altitude: NotRequired[Union[float, None]]
     altitude_accuracy: NotRequired[Union[float, None]]
-    heading: NotRequired[Union[int, None]]
+    heading: NotRequired[Union[float, None]]
     speed: NotRequired[Union[float, None]]
 
 class EmulationGeolocationPositionError(TypedDict):
@@ -1371,11 +1371,11 @@ class InputPointerParameters(TypedDict):
 class InputPointerCommonProperties(TypedDict):
     width: NotRequired[JsUint]
     height: NotRequired[JsUint]
-    pressure: NotRequired[int]
-    tangential_pressure: NotRequired[int]
+    pressure: NotRequired[float]
+    tangential_pressure: NotRequired[float]
     twist: NotRequired[int]  # 0 .. Math.PI / 2
-    altitude_angle: NotRequired[int]  # 0 .. 2 * Math.PI
-    azimuth_angle: NotRequired[int]
+    altitude_angle: NotRequired[float]  # 0 .. 2 * Math.PI
+    azimuth_angle: NotRequired[float]
 
 class InputPointerDownAction(InputPointerCommonProperties):
     type: Literal["pointerDown"]

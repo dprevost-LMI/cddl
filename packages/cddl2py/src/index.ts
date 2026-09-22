@@ -2,7 +2,7 @@ import {
     getRegexpPattern,
     isCDDLArray, isGroup, isNamedGroupReference, isLiteralWithValue,
     isNativeTypeWithOperator, isUnNamedProperty, isPropertyReference,
-    isRange, isVariable, pascalCase,
+    isRange, isFloatRange, isVariable, pascalCase,
     type Assignment, type NativeTypeWithOperator, type PropertyType, type PropertyReference,
     type Property, type Array as CDDLArray, type Operator, type Group,
     type Variable, type Comment, type Tag
@@ -109,7 +109,8 @@ function generateVariable (v: Variable, ctx: Context): string {
     const comments = formatLeadingComments(v.Comments)
 
     if (propTypes.length === 1 && isRange(propTypes[0])) {
-        return `${comments}${name} = int`
+        const range = ((propTypes[0] as NativeTypeWithOperator).Type as PropertyReference).Value
+        return `${comments}${name} = ${isFloatRange(range) ? 'float' : 'int'}`
     }
 
     const types = propTypes.map(t => resolveType(t, ctx, { quoteForwardReferences: true }))
@@ -692,11 +693,12 @@ function resolveType (t: PropertyType, ctx: Context, options: ResolveTypeOptions
     }
 
     if (isRange(t)) {
-        return 'int'
+        const range = ((t as NativeTypeWithOperator).Type as PropertyReference).Value
+        return isFloatRange(range) ? 'float' : 'int'
     }
 
     if (isPropertyReference(t) && (t as PropertyReference).Type === 'range') {
-        return 'int'
+        return isFloatRange((t as PropertyReference).Value) ? 'float' : 'int'
     }
 
     if (isNativeTypeWithOperator(t) && isNamedGroupReference(t.Type)) {

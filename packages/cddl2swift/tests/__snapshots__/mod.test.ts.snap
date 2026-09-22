@@ -82,7 +82,7 @@ public struct SessionCapabilitiesRequest {
 public struct SomeGroup {
     public var optional: String? // this is not leading
     public var orientation: String?
-    public var scale: Int?
+    public var scale: Double?
     public var shrinkToFit: Bool?
     public var shrinkToFitP: Bool?
     public var bottom: Double? // this is the pageRanges param

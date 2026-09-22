@@ -23,7 +23,7 @@ public class ImageFormat {
     /**
      * Creates a new ImageFormat instance
      */
-    public ImageFormat(String type, Integer quality) {
+    public ImageFormat(String type, Float quality) {
         this.type = type;
         this.quality = quality;
     }
@@ -38,13 +38,13 @@ public class ImageFormat {
         return this.type;
     }
 
-    private final Integer quality;
+    private final Float quality;
 
     /**
      * Gets the quality property
-     * @return Integer value
+     * @return Float value
      */
-    public Integer getQuality() {
+    public Float getQuality() {
         return this.quality;
     }
 

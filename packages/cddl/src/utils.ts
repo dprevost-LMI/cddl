@@ -113,6 +113,23 @@ export function isRange (t: any): boolean {
     return t && typeof t.Type === 'object' && (t.Type as any).Type === 'range'
 }
 
+/**
+ * `true` if either bound of a range was written as a float (e.g. `(0.0..1.0)`),
+ * including whole-valued floats that `Number.isInteger` alone can't distinguish
+ * from `(0..1)` - see the `IsFloat` marker on numeric literal nodes. Min/Max are
+ * typed as `number | string` but the parser actually emits literal nodes
+ * (`{ Value, IsFloat? }`); handle both shapes.
+ */
+export function isFloatRange (range: any): boolean {
+    const isFloatEndpoint = (node: any): boolean => {
+        if (typeof node === 'number') {
+            return !Number.isInteger(node)
+        }
+        return Boolean(node) && typeof node === 'object' && (node.IsFloat === true || !Number.isInteger(node.Value))
+    }
+    return Boolean(range) && (isFloatEndpoint(range.Min) || isFloatEndpoint(range.Max))
+}
+
 export function isLiteralWithValue (t: any): t is {
     Type: 'literal'
     Value: unknown

@@ -44,6 +44,22 @@ function rangeRef (): PropertyReference {
     }
 }
 
+// whole-valued float bounds, shaped like the parser's actual literal nodes (IsFloat
+// is what distinguishes `(0.0..1.0)` from `(0..1)` once both collapse to integers).
+// Min/Max are declared as `number | string`, but the parser really emits literal
+// nodes here - same gap the generators themselves work around with loose typing.
+function floatRangeRef (): PropertyReference {
+    return {
+        Type: 'range',
+        Value: {
+            Min: { Type: 'literal', Value: 0, Unwrapped: false, IsFloat: true },
+            Max: { Type: 'literal', Value: 1, Unwrapped: false, IsFloat: true },
+            Inclusive: true
+        } as any,
+        Unwrapped: false
+    }
+}
+
 function tagRef (typePart: string): PropertyReference {
     return {
         Type: 'tag',
@@ -291,6 +307,7 @@ describe('transform edge cases', () => {
             variable('mapped-tag-type', tagRef('tstr')),
             variable('custom-tag-type', tagRef('custom-tag')),
             variable('range-type', rangeRef()),
+            variable('float-range-type', floatRangeRef()),
             variable('literal-null', literal(null)),
             variable('literal-null-string', literal('null'))
         ])
@@ -303,6 +320,8 @@ describe('transform edge cases', () => {
         expect(output).toContain('MappedTagType = str')
         expect(output).toContain('CustomTagType = "CustomTag"')
         expect(output).toContain('RangeType = int')
+        // whole-valued float range `(0.0..1.0)` must stay `float`, not collapse to `int`
+        expect(output).toContain('FloatRangeType = float')
         expect(output).toContain('LiteralNull = None')
         // a quoted "null" is a string literal, not None
         expect(output).toContain('LiteralNullString = Literal["null"]')
@@ -427,6 +446,17 @@ describe('transform edge cases', () => {
                     Unwrapped: false
                 }
             } as any),
+            variable('direct-float-range', {
+                Type: {
+                    Type: 'range',
+                    Value: {
+                        Min: 0,
+                        Max: 1.5,
+                        Inclusive: true
+                    },
+                    Unwrapped: false
+                }
+            } as any),
             variable('mapped-any-wrapper', { Type: 'any' } as any),
             variable('operator-any-wrapper', {
                 Type: { Type: 'any' },
@@ -447,6 +477,8 @@ describe('transform edge cases', () => {
         ], { pydantic: true })
 
         expect(output).toContain('DirectRange = int')
+        // a non-whole-valued bound (1.5) is float even without the IsFloat marker
+        expect(output).toContain('DirectFloatRange = float')
         expect(output).toContain('MappedAnyWrapper = Any')
         expect(output).toContain('OperatorAnyWrapper = Any')
         expect(output).toContain('SingleChoiceInline = int')
