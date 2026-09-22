@@ -35,6 +35,6 @@
   },
   "dependencies": {
     "camelcase": "^9.0.0",
-    "yargs": "^18.0.0"
+    "yargs": "^18.2.0"
   }
 }
