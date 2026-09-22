@@ -119,6 +119,13 @@ export function isRange (t: any): boolean {
  * from `(0..1)` - see the `IsFloat` marker on numeric literal nodes. Min/Max are
  * typed as `number | string` but the parser actually emits literal nodes
  * (`{ Value, IsFloat? }`); handle both shapes.
+ *
+ * "Either bound" is deliberately permissive: RFC 8610 §2.2.2.1 only defines a range
+ * as `int-range` (both bounds integer) or `float-range` (both bounds float) - a mixed
+ * range like `0.5..10` is explicitly "NOT DEFINED" by the spec (its own BAD-range1/
+ * BAD-range2 examples). For that undefined case we pick float rather than integer,
+ * since it's the non-lossy choice - an integer type would corrupt real fractional
+ * values, while a float type just represents whole numbers as e.g. `1.0`.
  */
 export function isFloatRange (range: any): boolean {
     const isFloatEndpoint = (node: any): boolean => {
