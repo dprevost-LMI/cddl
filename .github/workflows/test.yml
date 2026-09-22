@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         # PRs only test 24.x (this repo's target) for fast feedback; the full matrix runs on main.
-        node-version: ${{ github.event_name == 'pull_request' && fromJSON('["24.x"]') || fromJSON('["20.x", "22.x", "24.x", "26.x"]') }}
+        node-version: ${{ github.event_name == 'pull_request' && fromJSON('["24.x"]') || fromJSON('["22.x", "24.x", "26.x"]') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
