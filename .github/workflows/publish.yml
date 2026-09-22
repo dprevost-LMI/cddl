@@ -69,7 +69,8 @@ jobs:
               if [ -z "$last_tag" ]; then
                 echo "$name: no previous release tag, including"
                 packages+=("$name")
-              elif ! git diff --quiet "$last_tag"..HEAD -- "$dir"; then
+              # tsconfig.json is also in every package's release-it changelog/bump scope (.release-it.base.ts).
+              elif ! git diff --quiet "$last_tag"..HEAD -- "$dir" tsconfig.json; then
                 echo "$name: changes since $last_tag, including"
                 packages+=("$name")
               else
