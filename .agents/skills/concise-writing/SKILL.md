@@ -24,7 +24,7 @@ fix: generators emit wrong numeric type for floating-point ranges (#78)
 - One line, imperative mood, `type: summary`, no trailing period.
 - Lead with *why*, not a mechanical restatement of the diff (bad: "update index.ts"; good: "isFloatRange misclassified symbolic range bounds as float").
 - Only add a body if the one-liner genuinely can't carry the reasoning — this repo's history mostly skips it, but a fix that isn't self-explanatory from the summary alone (e.g. it traces back to an RFC section, a specific bug repro, or a non-obvious root cause) earns one. Keep it to what a reader actually needs, not a walkthrough of the diff.
-- Pick the type by what changed: `fix`, `feat`, `test`, `ci`, `docs`, `chore`, `build`, `refactor`.
+- Pick the type by what changed: `fix`, `feat`, `perf`, `test`, `ci`, `docs`, `chore`, `build`, `refactor`, `style`, `revert`, `ops` — the exact set `.release-it.base.ts` maps to changelog sections.
 
 **Staging**: stage specific files by name (`git add path/to/file`), never a blanket `git add -A` or `git add .` — this repo's `.github/workflows/` files touch tokens and publish credentials, and a blind add risks scooping up something that doesn't belong. Check `git status` first for anything unexpected or secret-looking (`.env`, `credentials.json`, `*.pem`, `*token*`) and flag it instead of silently staging it.
 
