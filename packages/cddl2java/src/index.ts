@@ -459,7 +459,7 @@ function parsePropertyName (name: string): string {
     return name
 }
 
-function parseType (specType: any): { type: string, isLiteral: boolean } {
+export function parseType (specType: any): { type: string, isLiteral: boolean } {
     let type = 'Unknown'
     let isLiteral = false
 

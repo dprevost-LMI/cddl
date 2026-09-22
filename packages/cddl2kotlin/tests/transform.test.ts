@@ -55,6 +55,35 @@ describe('transform', () => {
             expect(output).toContain('INFINITY1("-Infinity");')
         })
 
+        it('should transform a bare integer range variable into a Long typealias', () => {
+            const assignment: Variable = {
+                Type: 'variable',
+                Name: 'byte-range',
+                PropertyType: {
+                    Type: { Type: 'range', Value: { Min: 0, Max: 255, Inclusive: true }, Unwrapped: false }
+                } as any,
+                Comments: [],
+                IsChoiceAddition: false
+            }
+            const output = transform([assignment])
+            expect(output).toContain('typealias ByteRange = Long')
+        })
+
+        it('should transform a bare float range variable into a Double typealias', () => {
+            const assignment: Variable = {
+                Type: 'variable',
+                Name: 'scale-range',
+                PropertyType: {
+                    // whole-valued float bound, shaped like the parser's actual literal node
+                    Type: { Type: 'range', Value: { Min: { Type: 'literal', Value: 0, Unwrapped: false, IsFloat: true }, Max: 1, Inclusive: true }, Unwrapped: false }
+                } as any,
+                Comments: [],
+                IsChoiceAddition: false
+            }
+            const output = transform([assignment])
+            expect(output).toContain('typealias ScaleRange = Double')
+        })
+
         it('should transform union of group references into a sealed interface', () => {
             const assignment: Variable = {
                 Type: 'variable',
@@ -74,6 +103,71 @@ describe('transform', () => {
     })
 
     describe('groups (data class)', () => {
+        it('should resolve a bare (operator-less) float range property to Double', () => {
+            // shape of a property like `quality: 0.0..1.0` (no operator) once parsed
+            const assignment: Group = {
+                Type: 'group',
+                Name: 'image-format',
+                IsChoiceAddition: false,
+                Properties: [
+                    {
+                        HasCut: false,
+                        Occurrence: { n: 1, m: 1 },
+                        Name: 'quality',
+                        Type: [{
+                            Type: 'range',
+                            Value: {
+                                Inclusive: true,
+                                Min: { Type: 'literal', Value: 0, Unwrapped: false, IsFloat: true },
+                                Max: { Type: 'literal', Value: 1, Unwrapped: false, IsFloat: true }
+                            },
+                            Unwrapped: false
+                        }],
+                        Comments: []
+                    }
+                ] as any,
+                Comments: []
+            }
+            const output = transform([assignment])
+            expect(output).toContain('val quality: Double')
+        })
+
+        it('should resolve an integer range property with an operator to Long, not always Double', () => {
+            // shape of a property like `count: (0..10) .default 5` - a range WITH an
+            // operator that is genuinely integer, not just the float `scale` example
+            const assignment: Group = {
+                Type: 'group',
+                Name: 'counter',
+                IsChoiceAddition: false,
+                Properties: [
+                    {
+                        HasCut: false,
+                        Occurrence: { n: 1, m: 1 },
+                        Name: 'count',
+                        Type: [{
+                            Type: {
+                                Type: 'range',
+                                Value: {
+                                    Inclusive: true,
+                                    Min: { Type: 'literal', Value: 0, Unwrapped: false },
+                                    Max: { Type: 'literal', Value: 10, Unwrapped: false }
+                                },
+                                Unwrapped: false
+                            },
+                            Operator: {
+                                Type: 'default',
+                                Value: { Type: 'literal', Value: 5, Unwrapped: false }
+                            }
+                        }],
+                        Comments: []
+                    }
+                ] as any,
+                Comments: []
+            }
+            const output = transform([assignment])
+            expect(output).toContain('val count: Long')
+        })
+
         it('should transform a simple group into a data class', () => {
             const assignment: Group = {
                 Type: 'group',

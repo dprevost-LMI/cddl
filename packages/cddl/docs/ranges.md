@@ -188,8 +188,8 @@ AST representation:
       "Type": {
         "Type": "range",
         "Value": {
-          "Min": 0.1,
-          "Max": 2,
+          "Min": { "Type": "literal", "Value": 0.1, "Unwrapped": false, "IsFloat": true },
+          "Max": { "Type": "literal", "Value": 2, "Unwrapped": false },
           "Inclusive": true
         },
         "Unwrapped": false
@@ -207,6 +207,19 @@ AST representation:
   "Comments": []
 }
 ```
+
+`Min` and `Max` are literal nodes, not bare numbers - `RangePropertyReference` is typed as
+`number | string`, but a numeric bound is always parsed into a `{ Type: 'literal', Value, ... }`
+node. `IsFloat: true` is set when that bound was written with a decimal point, e.g. `0.1` above.
+It only appears on `Min` here because `2` (unlike `2.0`) was written as a plain integer - but the
+range as a whole is still a float range, since a consumer only needs one bound to carry a
+fractional or `IsFloat` value to know values like `1.5` can appear.
+
+This marker exists specifically for whole-valued float bounds, where `Number.isInteger` can't
+tell `(0.0..1.0)` apart from `(0..1)` since both `Min`/`Max` are mathematically integers.
+Without it, `(0.0..1.0)` would be indistinguishable from an integer range - consumers that pick a
+numeric type (e.g. the `cddl2*` generators choosing `Integer` vs `Float`) should check `IsFloat`
+on both bounds, not just whether the value looks like a whole number.
 
 ## Large Integer Ranges
 
@@ -304,7 +317,8 @@ Ranges can be used with operators like `.default`:
 scale = (0.1..2) .default 1
 ```
 
-AST representation:
+AST representation (see [Range with Floating-Point Values](#range-with-floating-point-values)
+above for why `Min` carries `IsFloat: true` here):
 
 ```json
 {
@@ -316,8 +330,8 @@ AST representation:
       "Type": {
         "Type": "range",
         "Value": {
-          "Min": 0.1,
-          "Max": 2,
+          "Min": { "Type": "literal", "Value": 0.1, "Unwrapped": false, "IsFloat": true },
+          "Max": { "Type": "literal", "Value": 2, "Unwrapped": false },
           "Inclusive": true
         },
         "Unwrapped": false
