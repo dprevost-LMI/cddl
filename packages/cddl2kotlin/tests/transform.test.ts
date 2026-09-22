@@ -22,9 +22,13 @@ describe('transform', () => {
             expect(output).toContain('typealias DeviceAddress = String')
         })
 
-        it.each(['cbor', 'cborseq'] as const)('should ignore the .%s operator and still map bstr to ByteArray', (operatorType) => {
-            // RFC 8610 §3.8.4: .cbor/.cborseq are validation constraints on a byte string,
-            // not a structural type change - same as every other operator (.size, .and, ...)
+        it.each([
+            ['cbor', 'inner'],       // .cbor's argument matches a single decoded item - a map is fine
+            ['cborseq', 'innerList'] // .cborseq's argument matches the sequence taken as an array (RFC 8610 §3.8.4)
+        ] as const)('should ignore the .%s operator and still map bstr to ByteArray', (operatorType, referencedType) => {
+            // Either way this is a validation constraint on a byte string, not a structural
+            // type change - same as every other operator (.size, .and, ...); the generator
+            // never looks at what the reference resolves to.
             const assignment: Variable = {
                 Type: 'variable',
                 Name: 'payload',
@@ -32,7 +36,7 @@ describe('transform', () => {
                     Type: 'bstr',
                     Operator: {
                         Type: operatorType,
-                        Value: { Type: 'group', Value: 'inner', Unwrapped: false }
+                        Value: { Type: 'group', Value: referencedType, Unwrapped: false }
                     }
                 } as any,
                 Comments: [],

@@ -95,7 +95,10 @@ describe('parseType', () => {
         it('resolves a bstr with an unrecognized operator by ignoring the operator, not throwing', () => {
             // .cbor/.cborseq (RFC 8610 §3.8.4) are validation constraints on a byte string,
             // not a structural type change - same as every other generator already treats
-            // .size/.and/.within/etc. Before the fix this threw "Unknown operator".
+            // .size/.and/.within/etc. Before the fix this threw "Unknown operator". The
+            // generator never looks at what the reference resolves to, but the names below
+            // still follow the RFC: .cbor's argument matches a single decoded item (a map
+            // is fine), .cborseq's matches the sequence taken as an array.
             const cborSpecType = [{
                 Type: 'bstr',
                 Operator: {
@@ -109,7 +112,7 @@ describe('parseType', () => {
                 Type: 'bstr',
                 Operator: {
                     Type: 'cborseq',
-                    Value: { Type: 'group', Value: 'inner', Unwrapped: false }
+                    Value: { Type: 'group', Value: 'innerList', Unwrapped: false }
                 }
             }]
             expect(parseType(cborseqSpecType)).toEqual({ type: 'byte[]', isLiteral: false })
