@@ -1783,6 +1783,87 @@ exports[`parser > can parse operators 1`] = `
   {
     "Comments": [],
     "IsChoiceAddition": false,
+    "Name": "coseHeader",
+    "Properties": [
+      {
+        "Comments": [],
+        "HasCut": true,
+        "Name": "alg",
+        "Occurrence": {
+          "m": 1,
+          "n": 1,
+        },
+        "Type": [
+          "int",
+        ],
+      },
+    ],
+    "Type": "group",
+  },
+  {
+    "Comments": [],
+    "IsChoiceAddition": false,
+    "Name": "cosePayload",
+    "PropertyType": [
+      {
+        "Operator": {
+          "Type": "cbor",
+          "Value": {
+            "Type": "group",
+            "Unwrapped": false,
+            "Value": "coseHeader",
+          },
+        },
+        "Type": "bstr",
+      },
+    ],
+    "Type": "variable",
+  },
+  {
+    "Comments": [],
+    "Name": "coseHeaders",
+    "Type": "array",
+    "Values": [
+      {
+        "Comments": [],
+        "HasCut": false,
+        "Name": "",
+        "Occurrence": {
+          "m": 1,
+          "n": 1,
+        },
+        "Type": [
+          {
+            "Type": "group",
+            "Unwrapped": false,
+            "Value": "coseHeader",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    "Comments": [],
+    "IsChoiceAddition": false,
+    "Name": "coseSeq",
+    "PropertyType": [
+      {
+        "Operator": {
+          "Type": "cborseq",
+          "Value": {
+            "Type": "group",
+            "Unwrapped": false,
+            "Value": "coseHeaders",
+          },
+        },
+        "Type": "bstr",
+      },
+    ],
+    "Type": "variable",
+  },
+  {
+    "Comments": [],
+    "IsChoiceAddition": false,
     "Name": "foo",
     "PropertyType": [
       {
