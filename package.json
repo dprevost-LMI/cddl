@@ -24,7 +24,7 @@
   },
   "type": "module",
   "scripts": {
-    "build": "run-p clean compile",
+    "build": "run-s clean compile",
     "clean": "rimraf --glob ./packages/*/build ./packages/*/coverage",
     "compile": "run-s compile:cddl compile:other",
     "compile:cddl": "pnpm --filter=cddl exec tsc -p ./tsconfig.json",

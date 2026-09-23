@@ -26,9 +26,9 @@
   "scripts": {
     "release": "release-it --config .release-it.ts --VV",
     "release:ci": "pnpm release --ci --npm.skipChecks",
-    "cli-examples": "run-p cli-examples:*",
-    "cli-examples:local": "pnpm -w run compile && node ./bin/cddl2ts.js ../../examples/webdriver/local.cddl --unknown-as-any > ./cli-examples/local.ts && tsc -p ./cli-examples/tsconfig.json",
-    "cli-examples:remote": "pnpm -w run compile && node ./bin/cddl2ts.js ../../examples/webdriver/remote.cddl --unknown-as-any > ./cli-examples/remote.ts && tsc -p ./cli-examples/tsconfig.json"
+    "cli-examples": "pnpm -w run compile && run-s cli-examples:*",
+    "cli-examples:local": "node ./bin/cddl2ts.js ../../examples/webdriver/local.cddl --unknown-as-any > ./cli-examples/local.ts && tsc -p ./cli-examples/tsconfig.json",
+    "cli-examples:remote": "node ./bin/cddl2ts.js ../../examples/webdriver/remote.cddl --unknown-as-any > ./cli-examples/remote.ts && tsc -p ./cli-examples/tsconfig.json"
   },
   "devDependencies": {
     "@types/node": "^26.0.1",
